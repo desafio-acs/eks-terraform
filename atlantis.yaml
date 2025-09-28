@@ -2,7 +2,6 @@ version: 3
 projects:
   - name: terraform-root
     dir: terraform
-    workflow: default
     autoplan:
       enabled: true           
       when_modified:
