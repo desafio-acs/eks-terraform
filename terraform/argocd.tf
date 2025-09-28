@@ -14,7 +14,11 @@ resource "helm_release" "argocd" {
   values     = [templatefile("../argocd/install.yaml", {})]
 }
 
-resource "kubectl_manifest" "app_of_apps_infra" {
-  yaml_body   = file("../gitops/app-of-apps.yaml")
-  depends_on = [helm_release.argocd]
+#resource "kubectl_manifest" "app_of_apps_infra" {
+#  yaml_body   = file("../gitops/app-of-apps.yaml")
+#  depends_on = [helm_release.argocd]
+#}
+
+resource "kubernetes_manifest" "app_of_apps_infra" {
+  manifest = yamldecode(file("../gitops/app-of-apps.yaml"))
 }
