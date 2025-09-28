@@ -1,0 +1,6 @@
+prometheus:
+  prometheusSpec:
+    retention: 10d
+grafana:
+  adminUser: admin
+  adminPassword: senhaSegura123

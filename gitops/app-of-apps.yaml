@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: app-of-apps-infra
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/samuelamaralls/gitops
+        revision: main
+        files:
+          - path: infra/monitoring/Chart.yaml
+          - path: infra/eck/Chart.yaml
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/samuelamaralls/gitops
+        path: 'infra/{{path.basename}}'
+        targetRevision: main
+        helm:
+          valueFiles:
+            - values.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - ServerSideApply=true
+          - CreateNamespace=true

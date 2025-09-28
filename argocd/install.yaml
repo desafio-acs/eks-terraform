@@ -1,0 +1,104 @@
+nameOverride: argocd
+
+server:
+  #ingress:
+  #  enabled: true
+  #  ingressClassName: nginx
+  #  hostname: argocd.thesams.site
+  #  path: /
+  #  pathType: Prefix
+  #  annotations:
+  #    cert-manager.io/cluster-issuer: letsencrypt-prod
+  #    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+  #    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  #  tls:
+  #    - hosts:
+  #        - argocd.thesams.site
+  #      secretName: argocd-server-tls
+  metrics:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+      namespace: monitoring
+      additionalLabels:
+        release: monitoring
+
+repoServer:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: monitoring
+      additionalLabels:
+        release: prometheus
+
+dex:
+  enabled: true
+
+controller:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: monitoring
+      additionalLabels:
+        release: prometheus
+    rules:
+      enabled: true
+      additionalLabels: 
+        release: prometheus
+      namespace: monitoring
+      spec:
+      - alert: ArgoAppMissing
+        expr: |
+          absent(argocd_app_info) == 1
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "[Argo CD] No reported applications"
+          description: >
+            Argo CD has not reported any applications data for the past 15 minutes which
+            means that it must be down or not functioning properly.  This needs to be
+            resolved for this cloud to continue to maintain state.
+      - alert: ArgoAppNotSynced
+        expr: |
+          argocd_app_info{sync_status!="Synced"} == 1
+        for: 12h
+        labels:
+          severity: warning
+        annotations:
+          summary: "[{{`{{$labels.name}}`}}] Application not synchronized"
+          description: >
+            The application [{{`{{$labels.name}}`}} has not been synchronized for over
+            12 hours which means that the state of this cloud has drifted away from the
+            state inside Git.
+
+configs:
+  params:
+    server.insecure: true
+    server.dex.server: http://argocd-dex-server:5556
+    dexserver.disable.tls: true
+    server.dex.server.strict.tls: false
+  cm:
+    url: http://argocd.thesams.site
+    dex.config:  |
+      connectors:
+      - type: github
+        id: github
+        name: GitHub
+        config:
+          clientID: ""
+          clientSecret: ""
+          orgs:
+          - name: desafio-acs
+
+applicationSet:
+  enabled: true
+  metrics:
+    enabled: true
+  ingress:
+    enabled: true
+    #ingressClassName: nginx
+    hostname: applicationset.thesams.site
+    path: /
