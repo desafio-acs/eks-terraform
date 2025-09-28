@@ -8,6 +8,5 @@ projects:
       when_modified:
         - "*.tf"
         - "*.tfvars"
-        - "modules/**/*.tf"
-      apply: false         
+        - "modules/**/*.tf"  
 
