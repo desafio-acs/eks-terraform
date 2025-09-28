@@ -2,6 +2,7 @@ version: 3
 projects:
   - name: terraform-root
     dir: terraform
+    terraform_version: v1.9.2
     autoplan:
       enabled: true           
       when_modified:
