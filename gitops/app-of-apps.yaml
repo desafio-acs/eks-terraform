@@ -6,7 +6,7 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: https://github.com/samuelamaralls/gitops
+        repoURL: https://github.com/desafio-acs/gitops-infra
         revision: main
         files:
           - path: infra/monitoring/Chart.yaml
@@ -19,12 +19,12 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/samuelamaralls/gitops
+        repoURL: https://github.com/desafio-acs/gitops-infra
         path: 'infra/{{path.basename}}'
         targetRevision: main
         helm:
           valueFiles:
-            - infra/{{path.basename}}/values.yaml
+            - values.yaml
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{path.basename}}'
