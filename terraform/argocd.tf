@@ -22,3 +22,5 @@ resource "kubectl_manifest" "app_of_apps_infra" {
 #resource "kubernetes_manifest" "app_of_apps_infra" {
 #  manifest = yamldecode(file("../gitops/app-of-apps.yaml"))
 #}
+
+#
