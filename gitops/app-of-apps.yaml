@@ -10,7 +10,9 @@ spec:
         revision: main
         files:
           - path: infra/monitoring/Chart.yaml
-          - path: infra/eck/Chart.yaml
+          - path: infra/fluentbit/Chart.yaml
+          - path: infra/elastic/Chart.yaml
+          - path: infra/eck-operator/Chart.yaml
   template:
     metadata:
       name: '{{path.basename}}'
