@@ -111,7 +111,7 @@ data "kubernetes_config_map" "aws_auth" {
 
 # CALCULAR o novo conteúdo de 'mapUsers'
 locals {
-  # Lista dos novos usuários IAM para adicionar (system:masters)
+  # 1. Lista dos novos usuários IAM para adicionar (system:masters)
   new_map_users_list = [
     for u in aws_iam_user.eks_admin :
     {
@@ -121,15 +121,24 @@ locals {
     }
   ]
   
-  # Decodifica a lista de mapUsers existente (ou lista vazia se não existir)
-  updated_map_users = yamldecode(
+  # 2. Decodifica a lista de mapUsers existente (ou lista vazia se não existir)
+  existing_map_users = yamldecode(
     try(data.kubernetes_config_map.aws_auth.data["mapUsers"], "[]")
   )
   
-  # Concatena e codifica em YAML
-  final_map_users_yaml = yamlencode(
-    concat(local.updated_map_users, local.new_map_users_list)
-  )
+  # 3. Combina as listas existente e nova
+  combined_map_users = concat(local.existing_map_users, local.new_map_users_list)
+
+  # 4. CRIA UM MAPA para remover duplicados, usando 'userarn' como chave única
+  unique_map_users_map = {
+    for user in local.combined_map_users : user.userarn => user
+  }
+
+  # 5. Volta para uma lista apenas com entradas únicas
+  final_map_users_list = values(local.unique_map_users_map)
+  
+  # 6. Codifica em YAML
+  final_map_users_yaml = yamlencode(local.final_map_users_list)
 }
 
 # ATUALIZA A CHAVE 'mapUsers' no ConfigMap existente
