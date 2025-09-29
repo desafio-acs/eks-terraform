@@ -120,25 +120,26 @@ locals {
       groups   = ["system:masters"]
     }
   ]
-  
+    
   # 2. Decodifica a lista de mapUsers existente (ou lista vazia se não existir)
   existing_map_users = yamldecode(
     try(data.kubernetes_config_map.aws_auth.data["mapUsers"], "[]")
   )
-  
+    
   # 3. Combina as listas existente e nova
   combined_map_users = concat(local.existing_map_users, local.new_map_users_list)
 
   # 4. CRIA UM MAPA para remover duplicados, usando 'userarn' como chave única.
-  #    O operador '...' (agrupamento/splat) indica que duplicatas são esperadas,
-  #    e a última entrada com a mesma chave sobrescreve as anteriores.
   unique_map_users_map = {
     for user in local.combined_map_users : user.userarn => user...
   }
 
- # 5. Volta para uma lista apenas com entradas únicas (os VALORES do mapa).
+  # 5. Volta para uma lista apenas com entradas únicas (os VALORES do mapa).
   final_map_users_list = values(local.unique_map_users_map)
-
+  
+  # 6. Codifica em YAML
+  final_map_users_yaml = yamlencode(local.final_map_users_list)
+}
 
 # ATUALIZA A CHAVE 'mapUsers' no ConfigMap existente
 # O recurso kubernetes_config_map_v1_data faz um PATCH, evitando o erro de criação.
