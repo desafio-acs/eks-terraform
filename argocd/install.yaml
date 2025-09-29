@@ -11,10 +11,8 @@ server:
       alb.ingress.kubernetes.io/target-type: ip
       alb.ingress.kubernetes.io/ssl-redirect: "443"
       alb.ingress.kubernetes.io/group.name: desafio-acs
-    hosts:
-      - argocd.thesams.site
-    paths:
-      - /
+    hostname: "argocd.thesams.site"
+    path: /
     pathType: Prefix
 
   metrics:
@@ -83,7 +81,7 @@ configs:
     dexserver.disable.tls: true
     server.dex.server.strict.tls: false
   cm:
-    url: http://argocd.thesams.site
+    url: https://argocd.thesams.site
     dex.config:  |
       connectors:
       - type: github
@@ -109,8 +107,6 @@ applicationSet:
       alb.ingress.kubernetes.io/target-type: ip
       alb.ingress.kubernetes.io/ssl-redirect: "443"
       alb.ingress.kubernetes.io/group.name: desafio-acs
-    hosts:
-      - applicationset.thesams.site
-    paths:
-      - /
+    hostname: "applicationset.thesams.site"
+    path: /
     pathType: Prefix
