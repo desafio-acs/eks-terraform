@@ -18,3 +18,5 @@ resource "kubectl_manifest" "app_of_apps_infra" {
   yaml_body   = file("../gitops/app-of-apps.yaml")
   depends_on = [helm_release.argocd]
 }
+
+####
