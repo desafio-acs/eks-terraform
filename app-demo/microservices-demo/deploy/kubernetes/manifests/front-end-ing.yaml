@@ -8,12 +8,13 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:833565098889:certificate/02ef0c72-00b0-44b6-b075-e1a61423ad87
     alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: desafio-acs
     # Redirecionar HTTP para HTTPS (opcional)
     alb.ingress.kubernetes.io/ssl-redirect: "443"
 spec:
   ingressClassName: alb
   rules:
-    - host: front-end.thesams.site
+    - host: frontend.thesams.site
       http:
         paths:
           - path: /
