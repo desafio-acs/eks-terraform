@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sock-shop
+  namespace: argocd
+spec:
+  destination:
+    namespace: sock-shop
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: app-demo/microservices-demo/deploy/kubernetes/manifests
+    repoURL: https://github.com/desafio-acs/eks-terraform
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - ServerSideApply=true
+    - CreateNamespace=true
