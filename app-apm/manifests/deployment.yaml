@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: apm-node
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-apm-example
+  namespace: apm-node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-apm-example
+  template:
+    metadata:
+      labels:
+        app: node-apm-example
+    spec:
+      containers:
+        - name: node-apm-example
+          image: mclovin612615/node-apm-example:1.4
+          ports:
+            - containerPort: 3000
+          env:
+            - name: ELASTIC_APM_SERVER_URL
+              value: "http://apm-server-apm-http.elastic.svc.cluster.local:8200"
+            - name: NODE_ENV
+              value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-apm-example
+  namespace: apm-node
+spec:
+  selector:
+    app: node-apm-example
+  ports:
+    - port: 80
+      targetPort: 3000
+
